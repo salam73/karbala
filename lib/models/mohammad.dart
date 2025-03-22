@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class Mohmmad extends Equatable {
-  Mohmmad({
+  const Mohmmad({
     required this.object,
     required this.id,
     required this.createdTime,
@@ -40,14 +40,14 @@ class Mohmmad extends Equatable {
     DateTime? lastEditedTime,
     TedBy? createdBy,
     TedBy? lastEditedBy,
-    dynamic? cover,
-    dynamic? icon,
+    dynamic cover,
+    dynamic icon,
     Parent? parent,
     bool? archived,
     bool? inTrash,
     Properties? properties,
     String? url,
-    dynamic? publicUrl,
+    dynamic publicUrl,
   }) {
     return Mohmmad(
       object: object ?? this.object,
@@ -132,7 +132,7 @@ class Mohmmad extends Equatable {
 }
 
 class TedBy extends Equatable {
-  TedBy({required this.object, required this.id});
+  const TedBy({required this.object, required this.id});
 
   final String object;
   final String id;
@@ -152,7 +152,7 @@ class TedBy extends Equatable {
 }
 
 class Parent extends Equatable {
-  Parent({required this.type, required this.databaseId});
+  const Parent({required this.type, required this.databaseId});
 
   final String type;
   final String databaseId;
@@ -178,7 +178,7 @@ class Parent extends Equatable {
 }
 
 class Properties extends Equatable {
-  Properties({
+  const Properties({
     required this.pic,
     required this.video,
     required this.category,
@@ -262,7 +262,7 @@ class Properties extends Equatable {
 }
 
 class Category extends Equatable {
-  Category({required this.id, required this.type, required this.select});
+  const Category({required this.id, required this.type, required this.select});
 
   final String id;
   final String type;
@@ -295,7 +295,7 @@ class Category extends Equatable {
 }
 
 class Select extends Equatable {
-  Select({required this.id, required this.name, required this.color});
+  const Select({required this.id, required this.name, required this.color});
 
   final String id;
   final String name;
@@ -324,7 +324,11 @@ class Select extends Equatable {
 }
 
 class PropertiesDate extends Equatable {
-  PropertiesDate({required this.id, required this.type, required this.date});
+  const PropertiesDate({
+    required this.id,
+    required this.type,
+    required this.date,
+  });
 
   final String id;
   final String type;
@@ -357,13 +361,17 @@ class PropertiesDate extends Equatable {
 }
 
 class DateDate extends Equatable {
-  DateDate({required this.start, required this.end, required this.timeZone});
+  const DateDate({
+    required this.start,
+    required this.end,
+    required this.timeZone,
+  });
 
   final DateTime? start;
   final dynamic end;
   final dynamic timeZone;
 
-  DateDate copyWith({DateTime? start, dynamic? end, dynamic? timeZone}) {
+  DateDate copyWith({DateTime? start, dynamic end, dynamic timeZone}) {
     return DateDate(
       start: start ?? this.start,
       end: end ?? this.end,
@@ -393,7 +401,11 @@ class DateDate extends Equatable {
 }
 
 class Description extends Equatable {
-  Description({required this.id, required this.type, required this.richText});
+  const Description({
+    required this.id,
+    required this.type,
+    required this.richText,
+  });
 
   final String id;
   final String type;
@@ -423,7 +435,7 @@ class Description extends Equatable {
   Map<String, dynamic> toJson() => {
     "id": id,
     "type": type,
-    "rich_text": richText.map((x) => x?.toJson()).toList(),
+    "rich_text": richText.map((x) => x.toJson()).toList(),
   };
 
   @override
@@ -431,7 +443,7 @@ class Description extends Equatable {
 }
 
 class RichText extends Equatable {
-  RichText({
+  const RichText({
     required this.type,
     required this.text,
     required this.annotations,
@@ -450,7 +462,7 @@ class RichText extends Equatable {
     Text? text,
     Annotations? annotations,
     String? plainText,
-    dynamic? href,
+    dynamic href,
   }) {
     return RichText(
       type: type ?? this.type,
@@ -487,7 +499,7 @@ class RichText extends Equatable {
 }
 
 class Annotations extends Equatable {
-  Annotations({
+  const Annotations({
     required this.bold,
     required this.italic,
     required this.strikethrough,
@@ -553,12 +565,12 @@ class Annotations extends Equatable {
 }
 
 class Text extends Equatable {
-  Text({required this.content, required this.link});
+  const Text({required this.content, required this.link});
 
   final String content;
   final dynamic link;
 
-  Text copyWith({String? content, dynamic? link}) {
+  Text copyWith({String? content, dynamic link}) {
     return Text(content: content ?? this.content, link: link ?? this.link);
   }
 
@@ -573,7 +585,7 @@ class Text extends Equatable {
 }
 
 class Number extends Equatable {
-  Number({required this.id, required this.type, required this.number});
+  const Number({required this.id, required this.type, required this.number});
 
   final String id;
   final String type;
@@ -602,7 +614,7 @@ class Number extends Equatable {
 }
 
 class Pdf extends Equatable {
-  Pdf({required this.id, required this.type, required this.files});
+  const Pdf({required this.id, required this.type, required this.files});
 
   final String id;
   final String type;
@@ -632,7 +644,7 @@ class Pdf extends Equatable {
   Map<String, dynamic> toJson() => {
     "id": id,
     "type": type,
-    "files": files.map((x) => x?.toJson()).toList(),
+    "files": files.map((x) => x.toJson()).toList(),
   };
 
   @override
@@ -640,7 +652,11 @@ class Pdf extends Equatable {
 }
 
 class PdfFile extends Equatable {
-  PdfFile({required this.name, required this.type, required this.fileExternal});
+  const PdfFile({
+    required this.name,
+    required this.type,
+    required this.fileExternal,
+  });
 
   final String name;
   final String type;
@@ -674,7 +690,7 @@ class PdfFile extends Equatable {
 }
 
 class External extends Equatable {
-  External({required this.url});
+  const External({required this.url});
 
   final String url;
 
@@ -693,7 +709,7 @@ class External extends Equatable {
 }
 
 class Pic extends Equatable {
-  Pic({required this.id, required this.type, required this.files});
+  const Pic({required this.id, required this.type, required this.files});
 
   final String id;
   final String type;
@@ -723,7 +739,7 @@ class Pic extends Equatable {
   Map<String, dynamic> toJson() => {
     "id": id,
     "type": type,
-    "files": files.map((x) => x?.toJson()).toList(),
+    "files": files.map((x) => x.toJson()).toList(),
   };
 
   @override
@@ -731,7 +747,7 @@ class Pic extends Equatable {
 }
 
 class PicFile extends Equatable {
-  PicFile({required this.name, required this.type, required this.file});
+  const PicFile({required this.name, required this.type, required this.file});
 
   final String name;
   final String type;
@@ -764,7 +780,7 @@ class PicFile extends Equatable {
 }
 
 class FileFile extends Equatable {
-  FileFile({required this.url, required this.expiryTime});
+  const FileFile({required this.url, required this.expiryTime});
 
   final String url;
   final DateTime? expiryTime;
@@ -793,7 +809,7 @@ class FileFile extends Equatable {
 }
 
 class Title extends Equatable {
-  Title({required this.id, required this.type, required this.title});
+  const Title({required this.id, required this.type, required this.title});
 
   final String id;
   final String type;
@@ -823,7 +839,7 @@ class Title extends Equatable {
   Map<String, dynamic> toJson() => {
     "id": id,
     "type": type,
-    "title": title.map((x) => x?.toJson()).toList(),
+    "title": title.map((x) => x.toJson()).toList(),
   };
 
   @override
