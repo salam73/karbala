@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 import '../../models/item.dart' as item;
-import 'user_detail_page.dart';
 import 'users_providers.dart';
 
 class UserListPage extends ConsumerWidget {
