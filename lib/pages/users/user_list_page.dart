@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 //import 'package:future_provider/models/item.dart' as item;
 
 //import 'package:http/http.dart' as http;
@@ -241,37 +242,15 @@ class PictureWidget extends StatelessWidget {
               .map(
                 (file) => Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: Image.network(
-                    file.file!.url,
+                  child: CachedNetworkImage(
+                    imageUrl: file.file!.url,
                     height: 150,
                     width: 150,
-                    loadingBuilder: (
-                      BuildContext context,
-                      Widget child,
-                      ImageChunkEvent? loadingProgress,
-                    ) {
-                      if (loadingProgress == null) {
-                        return child;
-                      }
-                      if (loadingProgress.expectedTotalBytes != null) {
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value:
-                                loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!,
-                          ),
-                        );
-                      } else {
-                        return const Text('Image could not be loaded');
-                      }
-                    },
-                    errorBuilder: (
-                      BuildContext context,
-                      Object error,
-                      StackTrace? stackTrace,
-                    ) {
-                      return const Text('Image error');
-                    },
+                    placeholder:
+                        (context, url) =>
+                            const Center(child: CircularProgressIndicator()),
+                    errorWidget:
+                        (context, url, error) => const Icon(Icons.error),
                   ),
                 ),
               )
