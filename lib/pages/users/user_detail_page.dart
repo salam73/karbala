@@ -1,101 +1,96 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:karbala/models/mohammad.dart' as moh;
+import 'package:cached_video_player_plus/cached_video_player_plus.dart';
+import '../../widgets/picture_widget.dart';
 
-import 'users_providers.dart';
+class UserDetailPage extends StatefulWidget {
+  final moh.Mohmmad mohammad;
 
-class UserDetailPage extends ConsumerWidget {
-  final int userId;
-  const UserDetailPage({
-    super.key,
-    required this.userId,
-  });
+  const UserDetailPage({Key? key, required this.mohammad}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final userDetail = ref.watch(userDetailProvider(userId));
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('User Detail'),
-      ),
-      body: userDetail.when(
-        data: (user) {
-          return RefreshIndicator(
-            onRefresh: () async => ref.refresh(userDetailProvider(userId)),
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(
-                vertical: 40,
-                horizontal: 20,
-              ),
-              children: [
-                Text(
-                  user.name,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const Divider(),
-                UserInfo(
-                  iconData: Icons.account_circle,
-                  userInfo: user.username,
-                ),
-                const SizedBox(height: 10),
-                UserInfo(
-                  iconData: Icons.email_rounded,
-                  userInfo: user.email,
-                ),
-                const SizedBox(height: 10),
-                UserInfo(
-                  iconData: Icons.phone_enabled,
-                  userInfo: user.phone,
-                ),
-                const SizedBox(height: 10),
-                UserInfo(
-                  iconData: Icons.web_rounded,
-                  userInfo: user.website,
-                ),
-              ],
-            ),
-          );
-        },
-        error: (e, st) {
-          return Center(
-            child: Text(
-              e.toString(),
-              style: const TextStyle(
-                fontSize: 20,
-                color: Colors.red,
-              ),
-            ),
-          );
-        },
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
-    );
-  }
+  _UserDetailPageState createState() => _UserDetailPageState();
 }
 
-class UserInfo extends StatelessWidget {
-  final IconData iconData;
-  final String userInfo;
-  const UserInfo({
-    Key? key,
-    required this.iconData,
-    required this.userInfo,
-  }) : super(key: key);
+class _UserDetailPageState extends State<UserDetailPage> {
+  late CachedVideoPlayerPlusController _videoController;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.mohammad.properties?.video?.files != null &&
+        widget.mohammad.properties!.video!.files.isNotEmpty) {
+      _videoController = CachedVideoPlayerPlusController.networkUrl(
+          Uri.parse(widget.mohammad.properties!.video!.files.first.file!.url),
+        )
+        ..initialize().then((_) {
+          setState(() {}); // Ensure the UI updates after initialization
+        });
+    }
+  }
+
+  @override
+  void dispose() {
+    _videoController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(iconData),
-        const SizedBox(width: 10),
-        Text(
-          userInfo,
-          style: Theme.of(context).textTheme.titleLarge,
+    return Scaffold(
+      appBar: AppBar(title: Text('User Detail')),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Text(
+                widget.mohammad.properties?.title?.title[0].plainText ??
+                    'no title',
+                style: TextStyle(fontSize: 24),
+              ),
+              widget.mohammad.properties?.video?.files != null &&
+                      widget.mohammad.properties!.video!.files.isNotEmpty
+                  ?
+                  //Text(widget.mohammad.properties!.video!.files.first.file!.url)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child:
+                        _videoController.value.isInitialized
+                            ? AspectRatio(
+                              aspectRatio: _videoController.value.aspectRatio,
+                              child: CachedVideoPlayerPlus(_videoController),
+                            )
+                            : const CircularProgressIndicator(),
+                  )
+                  : const Text('No Video Available'),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: PictureWidget(mohammad: widget.mohammad),
+              ),
+            ],
+          ),
         ),
-      ],
+      ),
+      floatingActionButton:
+          widget.mohammad.properties?.video?.files != null &&
+                  widget.mohammad.properties!.video!.files.isNotEmpty
+              ? FloatingActionButton(
+                onPressed: () {
+                  setState(() {
+                    if (_videoController.value.isPlaying) {
+                      _videoController.pause();
+                    } else {
+                      _videoController.play();
+                    }
+                  });
+                },
+                child: Icon(
+                  _videoController.value.isPlaying
+                      ? Icons.pause
+                      : Icons.play_arrow,
+                ),
+              )
+              : null,
     );
   }
 }

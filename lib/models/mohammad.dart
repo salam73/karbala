@@ -636,7 +636,7 @@ class Pdf extends Equatable {
           json["files"] == null
               ? []
               : List<PdfFile>.from(
-                json["files"]!.map((x) => PdfFile.fromJson(x)),
+                json["files"].map((x) => PdfFile.fromJson(x)),
               ),
     );
   }
@@ -652,21 +652,17 @@ class Pdf extends Equatable {
 }
 
 class PdfFile extends Equatable {
-  const PdfFile({
-    required this.name,
-    required this.type,
-    required this.fileExternal,
-  });
+  const PdfFile({required this.name, required this.type, required this.file});
 
   final String name;
   final String type;
-  final External? fileExternal;
+  final FileFile? file;
 
-  PdfFile copyWith({String? name, String? type, External? fileExternal}) {
+  PdfFile copyWith({String? name, String? type, FileFile? file}) {
     return PdfFile(
       name: name ?? this.name,
       type: type ?? this.type,
-      fileExternal: fileExternal ?? this.fileExternal,
+      file: file ?? this.file,
     );
   }
 
@@ -674,19 +670,47 @@ class PdfFile extends Equatable {
     return PdfFile(
       name: json["name"] ?? "",
       type: json["type"] ?? "",
-      fileExternal:
-          json["external"] == null ? null : External.fromJson(json["external"]),
+      file: json["file"] == null ? null : FileFile.fromJson(json["file"]),
     );
   }
 
   Map<String, dynamic> toJson() => {
     "name": name,
     "type": type,
-    "external": fileExternal?.toJson(),
+    "file": file?.toJson(),
   };
 
   @override
-  List<Object?> get props => [name, type, fileExternal];
+  List<Object?> get props => [name, type, file];
+}
+
+class FileFile extends Equatable {
+  const FileFile({required this.url, required this.expiryTime});
+
+  final String url;
+  final DateTime? expiryTime;
+
+  FileFile copyWith({String? url, DateTime? expiryTime}) {
+    return FileFile(
+      url: url ?? this.url,
+      expiryTime: expiryTime ?? this.expiryTime,
+    );
+  }
+
+  factory FileFile.fromJson(Map<String, dynamic> json) {
+    return FileFile(
+      url: json["url"] ?? "",
+      expiryTime: DateTime.tryParse(json["expiry_time"] ?? ""),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "url": url,
+    "expiry_time": expiryTime?.toIso8601String(),
+  };
+
+  @override
+  List<Object?> get props => [url, expiryTime];
 }
 
 class External extends Equatable {
@@ -777,35 +801,6 @@ class PicFile extends Equatable {
 
   @override
   List<Object?> get props => [name, type, file];
-}
-
-class FileFile extends Equatable {
-  const FileFile({required this.url, required this.expiryTime});
-
-  final String url;
-  final DateTime? expiryTime;
-
-  FileFile copyWith({String? url, DateTime? expiryTime}) {
-    return FileFile(
-      url: url ?? this.url,
-      expiryTime: expiryTime ?? this.expiryTime,
-    );
-  }
-
-  factory FileFile.fromJson(Map<String, dynamic> json) {
-    return FileFile(
-      url: json["url"] ?? "",
-      expiryTime: DateTime.tryParse(json["expiry_time"] ?? ""),
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    "url": url,
-    "expiry_time": expiryTime?.toIso8601String(),
-  };
-
-  @override
-  List<Object?> get props => [url, expiryTime];
 }
 
 class Title extends Equatable {

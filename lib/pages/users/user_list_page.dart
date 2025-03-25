@@ -8,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 //import 'package:http/http.dart' as http;
 import 'package:karbala/models/mohammad.dart' as moh;
 //import '../../models/item.dart' as item;
+import 'user_detail_page.dart' show UserDetailPage;
 import 'users_providers.dart';
 
 class UserListPage extends ConsumerWidget {
@@ -90,36 +91,88 @@ class UserListPage extends ConsumerWidget {
                 itemBuilder: (BuildContext context, int index) {
                   final mohammad = mohammadItemList2[index];
 
-                  return ListTile(
-                    leading: CircleAvatar(child: Text(index.toString())),
-                    title: Text(
-                      mohammad.properties?.title?.title[0].plainText ??
-                          'no title',
-                    ),
-                    subtitle: Column(
-                      children: [
-                        Text(
-                          (mohammad
-                                      .properties
-                                      ?.description
-                                      ?.richText
-                                      .isNotEmpty ??
-                                  false)
-                              ? mohammad
-                                      .properties!
-                                      .description!
-                                      .richText
-                                      .first
-                                      .text
-                                      ?.content ??
-                                  'No Description'
-                              : 'No Description',
+                  return InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) {
+                            return UserDetailPage(mohammad: mohammad);
+                          },
                         ),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: PictureWidget(mohammad: mohammad),
+                      );
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(
+                      //     builder: (_) {
+                      //       return UserDetailPage(userId: user.id);
+                      //     },
+                      //   ),
+                      // );
+                      //fetchData();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        elevation: 5,
+
+                        child: ListTile(
+                          leading: CircleAvatar(child: Text(index.toString())),
+                          title: Text(
+                            mohammad.properties?.title?.title[0].plainText ??
+                                'no title',
+                          ),
+                          subtitle: Column(
+                            children: [
+                              Text(
+                                (mohammad
+                                            .properties
+                                            ?.description
+                                            ?.richText
+                                            .isNotEmpty ??
+                                        false)
+                                    ? mohammad
+                                            .properties!
+                                            .description!
+                                            .richText
+                                            .first
+                                            .text
+                                            ?.content ??
+                                        'No Description'
+                                    : 'No Description',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                textDirection: TextDirection.rtl,
+                                textAlign: TextAlign.right,
+                              ),
+
+                              // SingleChildScrollView(
+                              //   scrollDirection: Axis.horizontal,
+                              //   child: PictureWidget(mohammad: mohammad),
+                              // ),
+                              mohammad.properties!.pic!.files.isNotEmpty
+                                  ? CachedNetworkImage(
+                                    imageUrl:
+                                        mohammad
+                                            .properties!
+                                            .pic!
+                                            .files
+                                            .first
+                                            .file!
+                                            .url,
+                                    height: 150,
+                                    width: 150,
+                                    placeholder:
+                                        (context, url) => const Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                    errorWidget:
+                                        (context, url, error) =>
+                                            const Icon(Icons.error),
+                                  )
+                                  : const Text('No Image Available'),
+                            ],
+                          ),
                         ),
-                      ],
+                      ),
                     ),
                   );
                 },
@@ -229,36 +282,6 @@ class UserListPage extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
        */
-    );
-  }
-}
-
-class PictureWidget extends StatelessWidget {
-  const PictureWidget({super.key, required this.mohammad});
-
-  final moh.Mohmmad mohammad;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children:
-          mohammad.properties!.pic!.files
-              .map(
-                (file) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: CachedNetworkImage(
-                    imageUrl: file.file!.url,
-                    height: 150,
-                    width: 150,
-                    placeholder:
-                        (context, url) =>
-                            const Center(child: CircularProgressIndicator()),
-                    errorWidget:
-                        (context, url, error) => const Icon(Icons.error),
-                  ),
-                ),
-              )
-              .toList(),
     );
   }
 }
