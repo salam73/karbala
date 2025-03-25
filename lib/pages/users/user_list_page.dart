@@ -1,12 +1,12 @@
-import 'dart:convert';
+//import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 //import 'package:future_provider/models/item.dart' as item;
 
-import 'package:http/http.dart' as http;
-
-import '../../models/item.dart' as item;
+//import 'package:http/http.dart' as http;
+import 'package:karbala/models/mohammad.dart' as moh;
+//import '../../models/item.dart' as item;
 import 'users_providers.dart';
 
 class UserListPage extends ConsumerWidget {
@@ -15,42 +15,6 @@ class UserListPage extends ConsumerWidget {
   final databaseId = 'ff9ca896efcb45c99509c50fe4e23f64';
   final mathDatabaseId = '42d381c5ab3d4423b1613aa0be752f77';
   final String baseUrl = 'https://api.notion.com/v1/databases';
-
-  fetchData() async {
-    http.Response response;
-    final headers = {
-      'Authorization': 'Bearer $apiKey',
-      'Content-Type': 'application/json',
-      'Notion-Version': '2022-06-28',
-    };
-
-    try {
-      response = await http.post(
-        Uri.parse('$baseUrl/$databaseId/query'),
-        headers: headers,
-        // body: requestBody,
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final List<item.NotionItem> items = [];
-
-        for (var result in data['results']) {
-          items.add(item.NotionItem.fromJson(result));
-        }
-        for (var item in items) {
-          // print(item.properties?.name?.title[0].plainText ?? 'no title');
-          // print(item.properties?.area?.select!.name ?? 'no name');
-          print(item.properties?.picture?.files[0].file?.url ?? 'no file');
-        }
-        print(items.length);
-      } else {
-        print('Failed to load data!');
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -66,10 +30,11 @@ class UserListPage extends ConsumerWidget {
     print(
       'hasValue: ${mohammadItemList.hasValue}, hasError: ${mohammadItemList.hasError}',
     );
+    //test
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('User List'),
+        title: const Text('User List'),
         actions: [
           IconButton(
             onPressed: () {
@@ -147,46 +112,7 @@ class UserListPage extends ConsumerWidget {
                         ),
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children:
-                                mohammad.properties!.pic!.files
-                                    .map(
-                                      (file) => Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 4.0,
-                                        ),
-                                        child: Image.network(
-                                          file.file!.url,
-                                          height: 150,
-                                          width: 150,
-                                          loadingBuilder: (
-                                            BuildContext context,
-                                            Widget child,
-                                            ImageChunkEvent? loadingProgress,
-                                          ) {
-                                            if (loadingProgress == null) {
-                                              return child;
-                                            }
-                                            return Center(
-                                              child: CircularProgressIndicator(
-                                                value:
-                                                    loadingProgress
-                                                                .expectedTotalBytes !=
-                                                            null
-                                                        ? loadingProgress
-                                                                .cumulativeBytesLoaded /
-                                                            (loadingProgress
-                                                                    .expectedTotalBytes ??
-                                                                1)
-                                                        : null,
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                          ),
+                          child: PictureWidget(mohammad: mohammad),
                         ),
                       ],
                     ),
@@ -298,6 +224,58 @@ class UserListPage extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
        */
+    );
+  }
+}
+
+class PictureWidget extends StatelessWidget {
+  const PictureWidget({super.key, required this.mohammad});
+
+  final moh.Mohmmad mohammad;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children:
+          mohammad.properties!.pic!.files
+              .map(
+                (file) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: Image.network(
+                    file.file!.url,
+                    height: 150,
+                    width: 150,
+                    loadingBuilder: (
+                      BuildContext context,
+                      Widget child,
+                      ImageChunkEvent? loadingProgress,
+                    ) {
+                      if (loadingProgress == null) {
+                        return child;
+                      }
+                      if (loadingProgress.expectedTotalBytes != null) {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value:
+                                loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!,
+                          ),
+                        );
+                      } else {
+                        return const Text('Image could not be loaded');
+                      }
+                    },
+                    errorBuilder: (
+                      BuildContext context,
+                      Object error,
+                      StackTrace? stackTrace,
+                    ) {
+                      return const Text('Image error');
+                    },
+                  ),
+                ),
+              )
+              .toList(),
     );
   }
 }
