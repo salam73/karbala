@@ -55,15 +55,16 @@ class UserListPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // final userList = ref.watch(userListProvider);
-    final notionItemList = ref.watch(notionItemProvider);
+    //final notionItemList = ref.watch(notionItemProvider);
     final mohammadItemList = ref.watch(mohammadItemProvider);
+    final mohammadItemList2 = ref.watch(myHammadListProvider);
     // print(userList);
     // print(notionItemList);
     print(
-      'isLoading: ${notionItemList.isLoading}, isRefreshing: ${notionItemList.isRefreshing}, isReloading: ${notionItemList.isReloading}',
+      'isLoading: ${mohammadItemList.isLoading}, isRefreshing: ${mohammadItemList.isRefreshing}, isReloading: ${mohammadItemList.isReloading}',
     );
     print(
-      'hasValue: ${notionItemList.hasValue}, hasError: ${notionItemList.hasError}',
+      'hasValue: ${mohammadItemList.hasValue}, hasError: ${mohammadItemList.hasError}',
     );
 
     return Scaffold(
@@ -108,7 +109,92 @@ class UserListPage extends ConsumerWidget {
       //       child: CircularProgressIndicator(),
       //     ),
       // },
-      body: mohammadItemList.when(
+      body:
+          mohammadItemList.isLoading && mohammadItemList2.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : ListView.separated(
+                itemCount: mohammadItemList2.length,
+                separatorBuilder: (BuildContext context, int index) {
+                  return const Divider();
+                },
+                itemBuilder: (BuildContext context, int index) {
+                  final mohammad = mohammadItemList2[index];
+
+                  return ListTile(
+                    leading: CircleAvatar(child: Text(index.toString())),
+                    title: Text(
+                      mohammad.properties?.title?.title[0].plainText ??
+                          'no title',
+                    ),
+                    subtitle: Column(
+                      children: [
+                        Text(
+                          (mohammad
+                                      .properties
+                                      ?.description
+                                      ?.richText
+                                      .isNotEmpty ??
+                                  false)
+                              ? mohammad
+                                      .properties!
+                                      .description!
+                                      .richText
+                                      .first
+                                      .text
+                                      ?.content ??
+                                  'No Description'
+                              : 'No Description',
+                        ),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children:
+                                mohammad.properties!.pic!.files
+                                    .map(
+                                      (file) => Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4.0,
+                                        ),
+                                        child: Image.network(
+                                          file.file!.url,
+                                          height: 150,
+                                          width: 150,
+                                          loadingBuilder: (
+                                            BuildContext context,
+                                            Widget child,
+                                            ImageChunkEvent? loadingProgress,
+                                          ) {
+                                            if (loadingProgress == null) {
+                                              return child;
+                                            }
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                value:
+                                                    loadingProgress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? loadingProgress
+                                                                .cumulativeBytesLoaded /
+                                                            (loadingProgress
+                                                                    .expectedTotalBytes ??
+                                                                1)
+                                                        : null,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+
+      /*   mohammadItemList.when(
         skipLoadingOnRefresh: false,
         data: (items) {
           return RefreshIndicator(
@@ -211,6 +297,7 @@ class UserListPage extends ConsumerWidget {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
+       */
     );
   }
 }

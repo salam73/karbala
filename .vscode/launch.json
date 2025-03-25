@@ -11,8 +11,7 @@
             "type": "dart",
             "program": "lib/main.dart",
       "args": [
-        "-d",
-        "chrome",
+        
         "--web-port=4000"
       ]
         },
