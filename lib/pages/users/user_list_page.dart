@@ -21,8 +21,12 @@ class UserListPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // final userList = ref.watch(userListProvider);
     //final notionItemList = ref.watch(notionItemProvider);
-    final mohammadItemList = ref.watch(mohammadItemProvider);
+    AsyncValue<List<moh.Mohmmad>> mohammadItemList = const AsyncValue.loading();
     final mohammadItemList2 = ref.watch(myHammadListProvider);
+    if (mohammadItemList2.isEmpty) {
+      mohammadItemList = ref.watch(mohammadItemProvider);
+    }
+
     // print(userList);
     // print(notionItemList);
     print(
