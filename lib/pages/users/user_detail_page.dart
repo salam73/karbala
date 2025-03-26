@@ -67,6 +67,22 @@ class _UserDetailPageState extends State<UserDetailPage> {
                 scrollDirection: Axis.horizontal,
                 child: PictureWidget(mohammad: widget.mohammad),
               ),
+
+              Text(
+                (widget.mohammad.properties?.description?.richText.isNotEmpty ??
+                        false)
+                    ? widget
+                            .mohammad
+                            .properties!
+                            .description!
+                            .richText
+                            .first
+                            .text
+                            ?.content ??
+                        'No Description'
+                    : 'No Description',
+                textDirection: TextDirection.rtl,
+              ),
             ],
           ),
         ),
