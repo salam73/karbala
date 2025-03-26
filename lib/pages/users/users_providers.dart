@@ -74,7 +74,7 @@ final wasLoadingProvider = StateProvider<bool>((ref) {
 // });
 
 @riverpod
-FutureOr<User> userDetail(UserDetailRef ref, int id) async {
+FutureOr<User> userDetail(Ref ref, int id) async {
   ref.onDispose(() {
     print('[userDetailProvider($id)] disposed');
   });
@@ -85,7 +85,7 @@ FutureOr<User> userDetail(UserDetailRef ref, int id) async {
 }
 
 @Riverpod(keepAlive: false)
-FutureOr<int> returnOne(ReturnOneRef ref) {
+FutureOr<int> returnOne(Ref ref) {
   ref.keepAlive();
   return Future.value(1);
 }

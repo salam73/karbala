@@ -102,10 +102,11 @@ class _UserDetailPageState extends State<UserDetailPage> {
                   });
                 },
                 child: Icon(
-                  !_videoController.value.isPlaying ||
-                          _videoController.value.isCompleted
-                      ? Icons.play_arrow
-                      : Icons.pause,
+                  _videoController.value.isPlaying ||
+                          _videoController.value.position ==
+                              _videoController.value.duration
+                      ? Icons.pause
+                      : Icons.play_arrow,
                 ),
               )
               : null,

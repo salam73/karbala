@@ -22,7 +22,7 @@ final notionItemProvider = AutoDisposeFutureProvider<List<NotionItem>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef NotionItemRef = AutoDisposeFutureProviderRef<List<NotionItem>>;
-String _$mohammadItemHash() => r'61b98657c468d4f2c96f31034a2433fe52c03d4c';
+String _$mohammadItemHash() => r'85bef7eebe9d3ef8dd074d974a5c8ffb2e2618f0';
 
 /// See also [mohammadItem].
 @ProviderFor(mohammadItem)
@@ -38,7 +38,7 @@ final mohammadItemProvider = AutoDisposeFutureProvider<List<Mohmmad>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef MohammadItemRef = AutoDisposeFutureProviderRef<List<Mohmmad>>;
-String _$userDetailHash() => r'621232196d75167c197cb05dac03903bede6b8c8';
+String _$userDetailHash() => r'6716910e38764a9c82cf880b8fce0782c543b6af';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -189,7 +189,7 @@ class _UserDetailProviderElement extends AutoDisposeFutureProviderElement<User>
   int get id => (origin as UserDetailProvider).id;
 }
 
-String _$returnOneHash() => r'c8a1c764aee472e19ff2642b6b37b5bf40bbacb6';
+String _$returnOneHash() => r'b1b3e40507130e0c37e541546365f30a90fa15b1';
 
 /// See also [returnOne].
 @ProviderFor(returnOne)
