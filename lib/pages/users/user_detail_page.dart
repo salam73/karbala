@@ -9,6 +9,7 @@ class UserDetailPage extends StatefulWidget {
   const UserDetailPage({Key? key, required this.mohammad}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _UserDetailPageState createState() => _UserDetailPageState();
 }
 
@@ -101,9 +102,10 @@ class _UserDetailPageState extends State<UserDetailPage> {
                   });
                 },
                 child: Icon(
-                  _videoController.value.isPlaying
-                      ? Icons.pause
-                      : Icons.play_arrow,
+                  !_videoController.value.isPlaying ||
+                          _videoController.value.isCompleted
+                      ? Icons.play_arrow
+                      : Icons.pause,
                 ),
               )
               : null,
