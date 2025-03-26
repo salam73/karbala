@@ -123,6 +123,10 @@ class UserListPage extends ConsumerWidget {
                           subtitle: Column(
                             children: [
                               Text(
+                                mohammad.properties?.category?.select?.name ??
+                                    'no date',
+                              ), //Text(user.name),
+                              Text(
                                 (mohammad
                                             .properties
                                             ?.description
