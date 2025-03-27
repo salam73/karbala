@@ -34,25 +34,25 @@ FutureOr<List<NotionItem>> notionItem(Ref ref) async {
 }
 
 final myHammadListProvider =
-    StateNotifierProvider<MyHammadListNotifier, List<Mohmmad>>((ref) {
+    StateNotifierProvider<MyHammadListNotifier, List<Temu>>((ref) {
       return MyHammadListNotifier();
     });
 
-class MyHammadListNotifier extends StateNotifier<List<Mohmmad>> {
+class MyHammadListNotifier extends StateNotifier<List<Temu>> {
   MyHammadListNotifier() : super([]);
 
-  void addAll(List<Mohmmad> items) {
+  void addAll(List<Temu> items) {
     state = [...state, ...items];
   }
 }
 
 @riverpod
-FutureOr<List<Mohmmad>> mohammadItem(Ref ref) async {
+FutureOr<List<Temu>> mohammadItem(Ref ref) async {
   ref.onDispose(() {});
   final response = await ref.watch(dioProvider).post('');
   // throw 'Fail to fetch user list';
   final List itemList = response.data['results'];
-  final items = [for (final user in itemList) Mohmmad.fromJson(user)];
+  final items = [for (final user in itemList) Temu.fromJson(user)];
   // print(items.length);
   ref.read(myHammadListProvider.notifier).addAll(items);
 

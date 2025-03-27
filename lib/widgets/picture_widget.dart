@@ -6,29 +6,37 @@ import '../models/mohammad.dart' as moh;
 class PictureWidget extends StatelessWidget {
   const PictureWidget({super.key, required this.mohammad});
 
-  final moh.Mohmmad mohammad;
+  final moh.Temu mohammad;
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children:
-          mohammad.properties!.pic!.files
-              .map(
-                (file) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: CachedNetworkImage(
-                    imageUrl: file.file!.url,
-                    height: 150,
-                    width: 150,
-                    placeholder:
-                        (context, url) =>
-                            const Center(child: CircularProgressIndicator()),
-                    errorWidget:
-                        (context, url, error) => const Icon(Icons.error),
-                  ),
+      children: [
+        CachedNetworkImage(
+          imageUrl: mohammad.cover,
+          placeholder: (context, url) => const CircularProgressIndicator(),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                mohammad.id!,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
-              )
-              .toList(),
+              ),
+              Text(
+                mohammad.createdTime.toString(),
+                style: const TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

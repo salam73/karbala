@@ -15,22 +15,23 @@ Dio dio(Ref ref) {
     'Notion-Version': '2022-06-28',
   };
 
-  if (kIsWeb) {
-    return Dio(
-      BaseOptions(
-        baseUrl: '$proxyUrl/query/$databaseIdMohammad/$apiKey',
-        headers: headers,
-
-        queryParameters: {
-          'start_cursor': '15a48fcd-1a60-4402-a836-7b47e28295ed',
-        },
-      ),
-    );
+  if (kIsWeb || defaultTargetPlatform == TargetPlatform.macOS) {
+    try {
+      return Dio(
+        BaseOptions(
+          baseUrl: '$proxyUrl/query/$databaseIdTemu/$apiKey',
+          headers: headers,
+          queryParameters: {
+            'start_cursor': '15a48fcd-1a60-4402-a836-7b47e28295ed',
+          },
+        ),
+      );
+    } catch (e) {
+      print('Error: $e');
+      rethrow; // Optionally rethrow the error if needed
+    }
   }
   return Dio(
-    BaseOptions(
-      baseUrl: '$baseUrl/$databaseIdMohammad/query',
-      headers: headers,
-    ),
+    BaseOptions(baseUrl: '$baseUrl/$databaseIdTemu/query', headers: headers),
   );
 }

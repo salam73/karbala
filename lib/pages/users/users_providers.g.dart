@@ -22,11 +22,11 @@ final notionItemProvider = AutoDisposeFutureProvider<List<NotionItem>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef NotionItemRef = AutoDisposeFutureProviderRef<List<NotionItem>>;
-String _$mohammadItemHash() => r'85bef7eebe9d3ef8dd074d974a5c8ffb2e2618f0';
+String _$mohammadItemHash() => r'b0288f23f7ba1f7997df6f51189fd8c3125159c4';
 
 /// See also [mohammadItem].
 @ProviderFor(mohammadItem)
-final mohammadItemProvider = AutoDisposeFutureProvider<List<Mohmmad>>.internal(
+final mohammadItemProvider = AutoDisposeFutureProvider<List<Temu>>.internal(
   mohammadItem,
   name: r'mohammadItemProvider',
   debugGetCreateSourceHash:
@@ -37,7 +37,7 @@ final mohammadItemProvider = AutoDisposeFutureProvider<List<Mohmmad>>.internal(
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef MohammadItemRef = AutoDisposeFutureProviderRef<List<Mohmmad>>;
+typedef MohammadItemRef = AutoDisposeFutureProviderRef<List<Temu>>;
 String _$userDetailHash() => r'6716910e38764a9c82cf880b8fce0782c543b6af';
 
 /// Copied from Dart SDK

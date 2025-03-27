@@ -18,8 +18,8 @@ class Temu extends Equatable {
     required this.publicUrl,
   });
 
-  final String? object;
-  final String? id;
+  final String object;
+  final String id;
   final DateTime? createdTime;
   final DateTime? lastEditedTime;
   final TedBy? createdBy;
@@ -27,10 +27,10 @@ class Temu extends Equatable {
   final dynamic cover;
   final dynamic icon;
   final Parent? parent;
-  final bool? archived;
-  final bool? inTrash;
+  final bool archived;
+  final bool inTrash;
   final Properties? properties;
-  final String? url;
+  final String url;
   final dynamic publicUrl;
 
   Temu copyWith({
@@ -69,8 +69,8 @@ class Temu extends Equatable {
 
   factory Temu.fromJson(Map<String, dynamic> json) {
     return Temu(
-      object: json["object"],
-      id: json["id"],
+      object: json["object"] ?? "",
+      id: json["id"] ?? "",
       createdTime: DateTime.tryParse(json["created_time"] ?? ""),
       lastEditedTime: DateTime.tryParse(json["last_edited_time"] ?? ""),
       createdBy:
@@ -84,13 +84,13 @@ class Temu extends Equatable {
       cover: json["cover"],
       icon: json["icon"],
       parent: json["parent"] == null ? null : Parent.fromJson(json["parent"]),
-      archived: json["archived"],
-      inTrash: json["in_trash"],
+      archived: json["archived"] ?? false,
+      inTrash: json["in_trash"] ?? false,
       properties:
           json["properties"] == null
               ? null
               : Properties.fromJson(json["properties"]),
-      url: json["url"],
+      url: json["url"] ?? "",
       publicUrl: json["public_url"],
     );
   }
@@ -137,17 +137,17 @@ class Temu extends Equatable {
 }
 
 class TedBy extends Equatable {
-  TedBy({required this.object, required this.id});
+  const TedBy({required this.object, required this.id});
 
-  final String? object;
-  final String? id;
+  final String object;
+  final String id;
 
   TedBy copyWith({String? object, String? id}) {
     return TedBy(object: object ?? this.object, id: id ?? this.id);
   }
 
   factory TedBy.fromJson(Map<String, dynamic> json) {
-    return TedBy(object: json["object"], id: json["id"]);
+    return TedBy(object: json["object"] ?? "", id: json["id"] ?? "");
   }
 
   Map<String, dynamic> toJson() => {"object": object, "id": id};
@@ -162,10 +162,10 @@ class TedBy extends Equatable {
 }
 
 class Parent extends Equatable {
-  Parent({required this.type, required this.databaseId});
+  const Parent({required this.type, required this.databaseId});
 
-  final String? type;
-  final String? databaseId;
+  final String type;
+  final String databaseId;
 
   Parent copyWith({String? type, String? databaseId}) {
     return Parent(
@@ -175,7 +175,10 @@ class Parent extends Equatable {
   }
 
   factory Parent.fromJson(Map<String, dynamic> json) {
-    return Parent(type: json["type"], databaseId: json["database_id"]);
+    return Parent(
+      type: json["type"] ?? "",
+      databaseId: json["database_id"] ?? "",
+    );
   }
 
   Map<String, dynamic> toJson() => {"type": type, "database_id": databaseId};
@@ -190,7 +193,7 @@ class Parent extends Equatable {
 }
 
 class Properties extends Equatable {
-  Properties({
+  const Properties({
     required this.tags,
     required this.image,
     required this.video,
@@ -237,13 +240,13 @@ class Properties extends Equatable {
 }
 
 class Image extends Equatable {
-  Image({required this.id, required this.type, required this.richText});
+  const Image({required this.id, required this.type, required this.richText});
 
-  final String? id;
-  final String? type;
-  final List<dynamic> richText;
+  final String id;
+  final String type;
+  final List<RichText> richText;
 
-  Image copyWith({String? id, String? type, List<dynamic>? richText}) {
+  Image copyWith({String? id, String? type, List<RichText>? richText}) {
     return Image(
       id: id ?? this.id,
       type: type ?? this.type,
@@ -253,19 +256,21 @@ class Image extends Equatable {
 
   factory Image.fromJson(Map<String, dynamic> json) {
     return Image(
-      id: json["id"],
-      type: json["type"],
+      id: json["id"] ?? "",
+      type: json["type"] ?? "",
       richText:
           json["rich_text"] == null
               ? []
-              : List<dynamic>.from(json["rich_text"]!.map((x) => x)),
+              : List<RichText>.from(
+                json["rich_text"]!.map((x) => RichText.fromJson(x)),
+              ),
     );
   }
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "type": type,
-    "rich_text": richText.map((x) => x).toList(),
+    "rich_text": richText.map((x) => x.toJson()).toList(),
   };
 
   @override
@@ -277,14 +282,171 @@ class Image extends Equatable {
   List<Object?> get props => [id, type, richText];
 }
 
+class RichText extends Equatable {
+  const RichText({
+    required this.type,
+    required this.text,
+    required this.annotations,
+    required this.plainText,
+    required this.href,
+  });
+
+  final String type;
+  final Text? text;
+  final Annotations? annotations;
+  final String plainText;
+  final dynamic href;
+
+  RichText copyWith({
+    String? type,
+    Text? text,
+    Annotations? annotations,
+    String? plainText,
+    dynamic href,
+  }) {
+    return RichText(
+      type: type ?? this.type,
+      text: text ?? this.text,
+      annotations: annotations ?? this.annotations,
+      plainText: plainText ?? this.plainText,
+      href: href ?? this.href,
+    );
+  }
+
+  factory RichText.fromJson(Map<String, dynamic> json) {
+    return RichText(
+      type: json["type"] ?? "",
+      text: json["text"] == null ? null : Text.fromJson(json["text"]),
+      annotations:
+          json["annotations"] == null
+              ? null
+              : Annotations.fromJson(json["annotations"]),
+      plainText: json["plain_text"] ?? "",
+      href: json["href"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "type": type,
+    "text": text?.toJson(),
+    "annotations": annotations?.toJson(),
+    "plain_text": plainText,
+    "href": href,
+  };
+
+  @override
+  String toString() {
+    return "$type, $text, $annotations, $plainText, $href, ";
+  }
+
+  @override
+  List<Object?> get props => [type, text, annotations, plainText, href];
+}
+
+class Annotations extends Equatable {
+  const Annotations({
+    required this.bold,
+    required this.italic,
+    required this.strikethrough,
+    required this.underline,
+    required this.code,
+    required this.color,
+  });
+
+  final bool bold;
+  final bool italic;
+  final bool strikethrough;
+  final bool underline;
+  final bool code;
+  final String color;
+
+  Annotations copyWith({
+    bool? bold,
+    bool? italic,
+    bool? strikethrough,
+    bool? underline,
+    bool? code,
+    String? color,
+  }) {
+    return Annotations(
+      bold: bold ?? this.bold,
+      italic: italic ?? this.italic,
+      strikethrough: strikethrough ?? this.strikethrough,
+      underline: underline ?? this.underline,
+      code: code ?? this.code,
+      color: color ?? this.color,
+    );
+  }
+
+  factory Annotations.fromJson(Map<String, dynamic> json) {
+    return Annotations(
+      bold: json["bold"] ?? false,
+      italic: json["italic"] ?? false,
+      strikethrough: json["strikethrough"] ?? false,
+      underline: json["underline"] ?? false,
+      code: json["code"] ?? false,
+      color: json["color"] ?? "",
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "bold": bold,
+    "italic": italic,
+    "strikethrough": strikethrough,
+    "underline": underline,
+    "code": code,
+    "color": color,
+  };
+
+  @override
+  String toString() {
+    return "$bold, $italic, $strikethrough, $underline, $code, $color, ";
+  }
+
+  @override
+  List<Object?> get props => [
+    bold,
+    italic,
+    strikethrough,
+    underline,
+    code,
+    color,
+  ];
+}
+
+class Text extends Equatable {
+  const Text({required this.content, required this.link});
+
+  final String content;
+  final dynamic link;
+
+  Text copyWith({String? content, dynamic link}) {
+    return Text(content: content ?? this.content, link: link ?? this.link);
+  }
+
+  factory Text.fromJson(Map<String, dynamic> json) {
+    return Text(content: json["content"] ?? "", link: json["link"]);
+  }
+
+  Map<String, dynamic> toJson() => {"content": content, "link": link};
+
+  @override
+  String toString() {
+    return "$content, $link, ";
+  }
+
+  @override
+  List<Object?> get props => [content, link];
+}
+
 class Name extends Equatable {
-  Name({required this.id, required this.type, required this.title});
+  const Name({required this.id, required this.type, required this.title});
 
-  final String? id;
-  final String? type;
-  final List<dynamic> title;
+  final String id;
+  final String type;
+  final List<RichText> title;
 
-  Name copyWith({String? id, String? type, List<dynamic>? title}) {
+  Name copyWith({String? id, String? type, List<RichText>? title}) {
     return Name(
       id: id ?? this.id,
       type: type ?? this.type,
@@ -294,19 +456,21 @@ class Name extends Equatable {
 
   factory Name.fromJson(Map<String, dynamic> json) {
     return Name(
-      id: json["id"],
-      type: json["type"],
+      id: json["id"] ?? "",
+      type: json["type"] ?? "",
       title:
           json["title"] == null
               ? []
-              : List<dynamic>.from(json["title"]!.map((x) => x)),
+              : List<RichText>.from(
+                json["title"]!.map((x) => RichText.fromJson(x)),
+              ),
     );
   }
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "type": type,
-    "title": title.map((x) => x).toList(),
+    "title": title.map((x) => x.toJson()).toList(),
   };
 
   @override
@@ -319,13 +483,13 @@ class Name extends Equatable {
 }
 
 class Tags extends Equatable {
-  Tags({required this.id, required this.type, required this.multiSelect});
+  const Tags({required this.id, required this.type, required this.multiSelect});
 
-  final String? id;
-  final String? type;
-  final List<dynamic> multiSelect;
+  final String id;
+  final String type;
+  final List<MultiSelect> multiSelect;
 
-  Tags copyWith({String? id, String? type, List<dynamic>? multiSelect}) {
+  Tags copyWith({String? id, String? type, List<MultiSelect>? multiSelect}) {
     return Tags(
       id: id ?? this.id,
       type: type ?? this.type,
@@ -335,19 +499,21 @@ class Tags extends Equatable {
 
   factory Tags.fromJson(Map<String, dynamic> json) {
     return Tags(
-      id: json["id"],
-      type: json["type"],
+      id: json["id"] ?? "",
+      type: json["type"] ?? "",
       multiSelect:
           json["multi_select"] == null
               ? []
-              : List<dynamic>.from(json["multi_select"]!.map((x) => x)),
+              : List<MultiSelect>.from(
+                json["multi_select"]!.map((x) => MultiSelect.fromJson(x)),
+              ),
     );
   }
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "type": type,
-    "multi_select": multiSelect.map((x) => x).toList(),
+    "multi_select": multiSelect.map((x) => x.toJson()).toList(),
   };
 
   @override
@@ -357,4 +523,42 @@ class Tags extends Equatable {
 
   @override
   List<Object?> get props => [id, type, multiSelect];
+}
+
+class MultiSelect extends Equatable {
+  const MultiSelect({
+    required this.id,
+    required this.name,
+    required this.color,
+  });
+
+  final String id;
+  final String name;
+  final String color;
+
+  MultiSelect copyWith({String? id, String? name, String? color}) {
+    return MultiSelect(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      color: color ?? this.color,
+    );
+  }
+
+  factory MultiSelect.fromJson(Map<String, dynamic> json) {
+    return MultiSelect(
+      id: json["id"] ?? "",
+      name: json["name"] ?? "",
+      color: json["color"] ?? "",
+    );
+  }
+
+  Map<String, dynamic> toJson() => {"id": id, "name": name, "color": color};
+
+  @override
+  String toString() {
+    return "$id, $name, $color, ";
+  }
+
+  @override
+  List<Object?> get props => [id, name, color];
 }
