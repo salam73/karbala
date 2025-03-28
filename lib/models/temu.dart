@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class Temu extends Equatable {
-  const Temu({
+  Temu({
     required this.object,
     required this.id,
     required this.createdTime,
@@ -137,7 +137,7 @@ class Temu extends Equatable {
 }
 
 class TedBy extends Equatable {
-  const TedBy({required this.object, required this.id});
+  TedBy({required this.object, required this.id});
 
   final String object;
   final String id;
@@ -162,7 +162,7 @@ class TedBy extends Equatable {
 }
 
 class Parent extends Equatable {
-  const Parent({required this.type, required this.databaseId});
+  Parent({required this.type, required this.databaseId});
 
   final String type;
   final String databaseId;
@@ -193,21 +193,26 @@ class Parent extends Equatable {
 }
 
 class Properties extends Equatable {
-  const Properties({
-    required this.tags,
+  Properties({
+    required this.categories,
     required this.image,
     required this.video,
     required this.name,
   });
 
-  final Tags? tags;
+  final Categories? categories;
   final Image? image;
   final Image? video;
   final Name? name;
 
-  Properties copyWith({Tags? tags, Image? image, Image? video, Name? name}) {
+  Properties copyWith({
+    Categories? categories,
+    Image? image,
+    Image? video,
+    Name? name,
+  }) {
     return Properties(
-      tags: tags ?? this.tags,
+      categories: categories ?? this.categories,
       image: image ?? this.image,
       video: video ?? this.video,
       name: name ?? this.name,
@@ -216,7 +221,10 @@ class Properties extends Equatable {
 
   factory Properties.fromJson(Map<String, dynamic> json) {
     return Properties(
-      tags: json["Tags"] == null ? null : Tags.fromJson(json["Tags"]),
+      categories:
+          json["Categories"] == null
+              ? null
+              : Categories.fromJson(json["Categories"]),
       image: json["Image"] == null ? null : Image.fromJson(json["Image"]),
       video: json["Video"] == null ? null : Image.fromJson(json["Video"]),
       name: json["Name"] == null ? null : Name.fromJson(json["Name"]),
@@ -224,7 +232,7 @@ class Properties extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-    "Tags": tags?.toJson(),
+    "Categories": categories?.toJson(),
     "Image": image?.toJson(),
     "Video": video?.toJson(),
     "Name": name?.toJson(),
@@ -232,15 +240,96 @@ class Properties extends Equatable {
 
   @override
   String toString() {
-    return "$tags, $image, $video, $name, ";
+    return "$categories, $image, $video, $name, ";
   }
 
   @override
-  List<Object?> get props => [tags, image, video, name];
+  List<Object?> get props => [categories, image, video, name];
+}
+
+class Categories extends Equatable {
+  Categories({required this.id, required this.type, required this.multiSelect});
+
+  final String id;
+  final String type;
+  final List<MultiSelect> multiSelect;
+
+  Categories copyWith({
+    String? id,
+    String? type,
+    List<MultiSelect>? multiSelect,
+  }) {
+    return Categories(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      multiSelect: multiSelect ?? this.multiSelect,
+    );
+  }
+
+  factory Categories.fromJson(Map<String, dynamic> json) {
+    return Categories(
+      id: json["id"] ?? "",
+      type: json["type"] ?? "",
+      multiSelect:
+          json["multi_select"] == null
+              ? []
+              : List<MultiSelect>.from(
+                json["multi_select"]!.map((x) => MultiSelect.fromJson(x)),
+              ),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "type": type,
+    "multi_select": multiSelect.map((x) => x.toJson()).toList(),
+  };
+
+  @override
+  String toString() {
+    return "$id, $type, $multiSelect, ";
+  }
+
+  @override
+  List<Object?> get props => [id, type, multiSelect];
+}
+
+class MultiSelect extends Equatable {
+  MultiSelect({required this.id, required this.name, required this.color});
+
+  final String id;
+  final String name;
+  final String color;
+
+  MultiSelect copyWith({String? id, String? name, String? color}) {
+    return MultiSelect(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      color: color ?? this.color,
+    );
+  }
+
+  factory MultiSelect.fromJson(Map<String, dynamic> json) {
+    return MultiSelect(
+      id: json["id"] ?? "",
+      name: json["name"] ?? "",
+      color: json["color"] ?? "",
+    );
+  }
+
+  Map<String, dynamic> toJson() => {"id": id, "name": name, "color": color};
+
+  @override
+  String toString() {
+    return "$id, $name, $color, ";
+  }
+
+  @override
+  List<Object?> get props => [id, name, color];
 }
 
 class Image extends Equatable {
-  const Image({required this.id, required this.type, required this.richText});
+  Image({required this.id, required this.type, required this.richText});
 
   final String id;
   final String type;
@@ -283,7 +372,7 @@ class Image extends Equatable {
 }
 
 class RichText extends Equatable {
-  const RichText({
+  RichText({
     required this.type,
     required this.text,
     required this.annotations,
@@ -295,14 +384,14 @@ class RichText extends Equatable {
   final Text? text;
   final Annotations? annotations;
   final String plainText;
-  final dynamic href;
+  final String href;
 
   RichText copyWith({
     String? type,
     Text? text,
     Annotations? annotations,
     String? plainText,
-    dynamic href,
+    String? href,
   }) {
     return RichText(
       type: type ?? this.type,
@@ -322,7 +411,7 @@ class RichText extends Equatable {
               ? null
               : Annotations.fromJson(json["annotations"]),
       plainText: json["plain_text"] ?? "",
-      href: json["href"],
+      href: json["href"] ?? "",
     );
   }
 
@@ -344,7 +433,7 @@ class RichText extends Equatable {
 }
 
 class Annotations extends Equatable {
-  const Annotations({
+  Annotations({
     required this.bold,
     required this.italic,
     required this.strikethrough,
@@ -415,20 +504,23 @@ class Annotations extends Equatable {
 }
 
 class Text extends Equatable {
-  const Text({required this.content, required this.link});
+  Text({required this.content, required this.link});
 
   final String content;
-  final dynamic link;
+  final Link? link;
 
-  Text copyWith({String? content, dynamic link}) {
+  Text copyWith({String? content, Link? link}) {
     return Text(content: content ?? this.content, link: link ?? this.link);
   }
 
   factory Text.fromJson(Map<String, dynamic> json) {
-    return Text(content: json["content"] ?? "", link: json["link"]);
+    return Text(
+      content: json["content"] ?? "",
+      link: json["link"] == null ? null : Link.fromJson(json["link"]),
+    );
   }
 
-  Map<String, dynamic> toJson() => {"content": content, "link": link};
+  Map<String, dynamic> toJson() => {"content": content, "link": link?.toJson()};
 
   @override
   String toString() {
@@ -439,8 +531,32 @@ class Text extends Equatable {
   List<Object?> get props => [content, link];
 }
 
+class Link extends Equatable {
+  Link({required this.url});
+
+  final String url;
+
+  Link copyWith({String? url}) {
+    return Link(url: url ?? this.url);
+  }
+
+  factory Link.fromJson(Map<String, dynamic> json) {
+    return Link(url: json["url"] ?? "");
+  }
+
+  Map<String, dynamic> toJson() => {"url": url};
+
+  @override
+  String toString() {
+    return "$url, ";
+  }
+
+  @override
+  List<Object?> get props => [url];
+}
+
 class Name extends Equatable {
-  const Name({required this.id, required this.type, required this.title});
+  Name({required this.id, required this.type, required this.title});
 
   final String id;
   final String type;
@@ -480,85 +596,4 @@ class Name extends Equatable {
 
   @override
   List<Object?> get props => [id, type, title];
-}
-
-class Tags extends Equatable {
-  const Tags({required this.id, required this.type, required this.multiSelect});
-
-  final String id;
-  final String type;
-  final List<MultiSelect> multiSelect;
-
-  Tags copyWith({String? id, String? type, List<MultiSelect>? multiSelect}) {
-    return Tags(
-      id: id ?? this.id,
-      type: type ?? this.type,
-      multiSelect: multiSelect ?? this.multiSelect,
-    );
-  }
-
-  factory Tags.fromJson(Map<String, dynamic> json) {
-    return Tags(
-      id: json["id"] ?? "",
-      type: json["type"] ?? "",
-      multiSelect:
-          json["multi_select"] == null
-              ? []
-              : List<MultiSelect>.from(
-                json["multi_select"]!.map((x) => MultiSelect.fromJson(x)),
-              ),
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "type": type,
-    "multi_select": multiSelect.map((x) => x.toJson()).toList(),
-  };
-
-  @override
-  String toString() {
-    return "$id, $type, $multiSelect, ";
-  }
-
-  @override
-  List<Object?> get props => [id, type, multiSelect];
-}
-
-class MultiSelect extends Equatable {
-  const MultiSelect({
-    required this.id,
-    required this.name,
-    required this.color,
-  });
-
-  final String id;
-  final String name;
-  final String color;
-
-  MultiSelect copyWith({String? id, String? name, String? color}) {
-    return MultiSelect(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      color: color ?? this.color,
-    );
-  }
-
-  factory MultiSelect.fromJson(Map<String, dynamic> json) {
-    return MultiSelect(
-      id: json["id"] ?? "",
-      name: json["name"] ?? "",
-      color: json["color"] ?? "",
-    );
-  }
-
-  Map<String, dynamic> toJson() => {"id": id, "name": name, "color": color};
-
-  @override
-  String toString() {
-    return "$id, $name, $color, ";
-  }
-
-  @override
-  List<Object?> get props => [id, name, color];
 }
