@@ -6,7 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 //import 'package:future_provider/models/item.dart' as item;
 
 //import 'package:http/http.dart' as http;
-import 'package:karbala/models/mohammad.dart' as moh;
+import 'package:karbala/models/temu.dart' as tm;
 //import '../../models/item.dart' as item;
 import 'user_detail_page.dart' show UserDetailPage;
 import 'users_providers.dart';
@@ -30,22 +30,20 @@ class _UserListPageState extends ConsumerState<UserListPage> {
 
   @override
   Widget build(BuildContext context) {
-    AsyncValue<List<moh.Temu>> mohammadItemList = ref.watch(
-      mohammadItemProvider,
-    );
+    AsyncValue<List<tm.Temu>> temuItemList = ref.watch(temuItemProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('User List'),
         actions: const [RefreshButton()],
       ),
-      body: mohammadItemList.when(
+      body: temuItemList.when(
         data: (users) {
           // Pre-cache all images in the ListView
           for (final user in users) {
             if (user.properties?.image?.richText != null) {
               for (final image in user.properties!.image!.richText) {
-                final fileId = extractGoogleDriveFileId(image['plain_text']);
+                final fileId = extractGoogleDriveFileId(image.plainText);
                 if (fileId.isNotEmpty) {
                   precacheImage(
                     CachedNetworkImageProvider(
@@ -68,7 +66,23 @@ class _UserListPageState extends ConsumerState<UserListPage> {
 
               return Column(
                 children: [
-                  Text(user.properties!.name!.title.first['text']['content']),
+                  Text(user.properties!.name!.title.first.text!.content),
+                  //if (user.properties!.tags!.multiSelect.isNotEmpty)
+                  Row(
+                    children:
+                        user.properties!.tags!.multiSelect.map((tag) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4.0,
+                            ),
+                            child: Chip(
+                              label: Text(tag.name),
+                              backgroundColor: Colors.blue.shade100,
+                            ),
+                          );
+                        }).toList(),
+                  ),
+
                   if (user.properties!.image!.richText.isEmpty)
                     const SizedBox()
                   else
@@ -78,9 +92,8 @@ class _UserListPageState extends ConsumerState<UserListPage> {
                         itemCount:
                             user.properties!.image!.richText
                                 .map(
-                                  (image) => extractGoogleDriveFileId(
-                                    image['plain_text'],
-                                  ),
+                                  (image) =>
+                                      extractGoogleDriveFileId(image.plainText),
                                 )
                                 .where((fileId) => fileId.isNotEmpty)
                                 .length,
@@ -90,7 +103,7 @@ class _UserListPageState extends ConsumerState<UserListPage> {
                               user.properties!.image!.richText
                                   .map(
                                     (image) => extractGoogleDriveFileId(
-                                      image['plain_text'],
+                                      image.plainText,
                                     ),
                                   )
                                   .where((fileId) => fileId.isNotEmpty)
@@ -217,8 +230,8 @@ class _RefreshButtonState extends ConsumerState<RefreshButton> {
     });
 
     try {
-      ref.invalidate(mohammadItemProvider);
-      await ref.read(mohammadItemProvider.future); // Wait for data to reload
+      ref.invalidate(temuItemProvider);
+      await ref.read(temuItemProvider.future); // Wait for data to reload
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Refresh complete')));

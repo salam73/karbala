@@ -1,5 +1,5 @@
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:karbala/models/mohammad.dart';
+import 'package:karbala/models/temu.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -29,7 +29,7 @@ FutureOr<List<NotionItem>> notionItem(Ref ref) async {
   // throw 'Fail to fetch user list';
   final List itemList = response.data['results'];
   final items = [for (final user in itemList) NotionItem.fromJson(user)];
-  // print(items.length);
+  print(items.length);
   return items;
 }
 
@@ -47,7 +47,7 @@ class MyHammadListNotifier extends StateNotifier<List<Temu>> {
 }
 
 @riverpod
-FutureOr<List<Temu>> mohammadItem(Ref ref) async {
+FutureOr<List<Temu>> temuItem(Ref ref) async {
   ref.onDispose(() {});
   final response = await ref.watch(dioProvider).post('');
   // throw 'Fail to fetch user list';

@@ -6,7 +6,7 @@ import '../models/mohammad.dart' as moh;
 class PictureWidget extends StatelessWidget {
   const PictureWidget({super.key, required this.mohammad});
 
-  final moh.Temu mohammad;
+  final moh.Mohammad mohammad;
 
   @override
   Widget build(BuildContext context) {

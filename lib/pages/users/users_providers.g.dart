@@ -6,7 +6,7 @@ part of 'users_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$notionItemHash() => r'200f1ae534b8223b7ff1aced3bb4d83d5e9128c5';
+String _$notionItemHash() => r'4748ca481278199a5597cafcc94a819b0d5152fb';
 
 /// See also [notionItem].
 @ProviderFor(notionItem)
@@ -22,22 +22,22 @@ final notionItemProvider = AutoDisposeFutureProvider<List<NotionItem>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef NotionItemRef = AutoDisposeFutureProviderRef<List<NotionItem>>;
-String _$mohammadItemHash() => r'b0288f23f7ba1f7997df6f51189fd8c3125159c4';
+String _$temuItemHash() => r'5f6969d0544cad50e6173342b6e0496ba6080d87';
 
-/// See also [mohammadItem].
-@ProviderFor(mohammadItem)
-final mohammadItemProvider = AutoDisposeFutureProvider<List<Temu>>.internal(
-  mohammadItem,
-  name: r'mohammadItemProvider',
+/// See also [temuItem].
+@ProviderFor(temuItem)
+final temuItemProvider = AutoDisposeFutureProvider<List<Temu>>.internal(
+  temuItem,
+  name: r'temuItemProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$mohammadItemHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$temuItemHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef MohammadItemRef = AutoDisposeFutureProviderRef<List<Temu>>;
+typedef TemuItemRef = AutoDisposeFutureProviderRef<List<Temu>>;
 String _$userDetailHash() => r'6716910e38764a9c82cf880b8fce0782c543b6af';
 
 /// Copied from Dart SDK

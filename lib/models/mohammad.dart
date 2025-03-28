@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-class Temu extends Equatable {
-  const Temu({
+class Mohammad extends Equatable {
+  const Mohammad({
     required this.object,
     required this.id,
     required this.createdTime,
@@ -33,7 +33,7 @@ class Temu extends Equatable {
   final String? url;
   final dynamic publicUrl;
 
-  Temu copyWith({
+  Mohammad copyWith({
     String? object,
     String? id,
     DateTime? createdTime,
@@ -49,7 +49,7 @@ class Temu extends Equatable {
     String? url,
     dynamic publicUrl,
   }) {
-    return Temu(
+    return Mohammad(
       object: object ?? this.object,
       id: id ?? this.id,
       createdTime: createdTime ?? this.createdTime,
@@ -67,8 +67,8 @@ class Temu extends Equatable {
     );
   }
 
-  factory Temu.fromJson(Map<String, dynamic> json) {
-    return Temu(
+  factory Mohammad.fromJson(Map<String, dynamic> json) {
+    return Mohammad(
       object: json["object"],
       id: json["id"],
       createdTime: DateTime.tryParse(json["created_time"] ?? ""),
