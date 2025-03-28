@@ -255,9 +255,24 @@ class _UserListPageState extends ConsumerState<UserListPage> {
                                 CachedNetworkImage(
                                   imageUrl:
                                       'https://drive.google.com/uc?export=download&id=$fileId',
-                                  placeholder:
-                                      (context, url) =>
-                                          const CircularProgressIndicator(),
+                                  progressIndicatorBuilder: (
+                                    context,
+                                    url,
+                                    downloadProgress,
+                                  ) {
+                                    final progress =
+                                        (downloadProgress.progress ?? 0) * 100;
+                                    return Center(
+                                      child: Text(
+                                        '${progress.toStringAsFixed(0)}%', // Show progress as a percentage
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                   errorWidget:
                                       (context, url, error) =>
                                           const Icon(Icons.error),
