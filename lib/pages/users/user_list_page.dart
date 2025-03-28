@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 //import 'package:future_provider/models/item.dart' as item;
-
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 //import 'package:http/http.dart' as http;
 import 'package:karbala/models/temu.dart' as tm;
 //import '../../models/item.dart' as item;
@@ -30,9 +30,11 @@ class _UserListPageState extends ConsumerState<UserListPage> {
   }
 
   String truncateText(String text, int maxLines) {
-    const int maxLength = 40; // Adjust this based on your layout
+    double maxLength =
+        MediaQuery.of(context).size.width /
+        4.7; // Adjust this based on your layout
     if (text.length > maxLength) {
-      return '${text.substring(0, maxLength)}... no more';
+      return '${text.substring(0, maxLength.toInt())}... تفاصيل';
     }
     return text;
   }
@@ -65,191 +67,169 @@ class _UserListPageState extends ConsumerState<UserListPage> {
             }
           }
 
-          return SingleChildScrollView(
-            child: LayoutGrid(
-              columnSizes: [
-                1.fr, // First column takes up remaining space
-                1.fr, // Second column takes up remaining space
-              ],
-              // columnSizes: [1.fr, 1.fr], // Two columns with equal width
-              rowSizes: List.generate(
-                (users.length / 2).ceil(),
-                (_) => auto, // Automatically adjust row height
-              ),
-              rowGap: 8.0, // Spacing between rows
-              columnGap: 8.0, // Spacing between columns
-              children: [
-                for (final user in users)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (user.properties!.image!.richText.isEmpty)
-                        const SizedBox()
-                      else
-                        SizedBox(
-                          height: 200, // Adjust the height as needed
-                          child: PageView.builder(
-                            itemCount:
-                                user.properties!.image!.richText
-                                    .map(
-                                      (image) => extractGoogleDriveFileId(
-                                        image.plainText,
+          return MasonryGridView.count(
+            crossAxisCount: 2, // Number of columns
+            mainAxisSpacing: 8.0, // Spacing between rows
+            crossAxisSpacing: 8.0, // Spacing between columns
+            itemCount: users.length,
+            itemBuilder: (context, index) {
+              final user = users[index];
+              if (user.properties!.name!.title.isEmpty) {
+                return const SizedBox();
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (user.properties!.image!.richText.isNotEmpty)
+                    SizedBox(
+                      height: 200, // Adjust the height as needed
+                      child: PageView.builder(
+                        itemCount:
+                            user.properties!.image!.richText
+                                .map(
+                                  (image) =>
+                                      extractGoogleDriveFileId(image.plainText),
+                                )
+                                .where((fileId) => fileId.isNotEmpty)
+                                .length,
+                        itemBuilder: (context, index) {
+                          // Filter valid file IDs
+                          final validFileIds =
+                              user.properties!.image!.richText
+                                  .map(
+                                    (image) => extractGoogleDriveFileId(
+                                      image.plainText,
+                                    ),
+                                  )
+                                  .where((fileId) => fileId.isNotEmpty)
+                                  .toList();
+
+                          // Get the file ID for the current index
+                          final fileId = validFileIds[index];
+
+                          // Display the image with the index as text
+                          return GestureDetector(
+                            onTap: () {
+                              // Show the popup with the current image
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Dialog(
+                                    insetPadding:
+                                        EdgeInsets
+                                            .zero, // Remove default padding
+                                    child: Scaffold(
+                                      appBar: AppBar(
+                                        title: const Text('Image Viewer'),
+                                        leading: IconButton(
+                                          icon: const Icon(Icons.arrow_back),
+                                          onPressed: () {
+                                            Navigator.of(
+                                              context,
+                                            ).pop(); // Close the dialog
+                                          },
+                                        ),
                                       ),
-                                    )
-                                    .where((fileId) => fileId.isNotEmpty)
-                                    .length,
-                            itemBuilder: (context, index) {
-                              final validFileIds =
-                                  user.properties!.image!.richText
-                                      .map(
-                                        (image) => extractGoogleDriveFileId(
-                                          image.plainText,
-                                        ),
-                                      )
-                                      .where((fileId) => fileId.isNotEmpty)
-                                      .toList();
-                              final fileId = validFileIds[index];
-                              return GestureDetector(
-                                onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return Dialog(
-                                        insetPadding: EdgeInsets.zero,
-                                        child: Scaffold(
-                                          appBar: AppBar(
-                                            title: const Text('Image Viewer'),
-                                            leading: IconButton(
-                                              icon: const Icon(
-                                                Icons.arrow_back,
+                                      body: InteractiveViewer(
+                                        panEnabled: true, // Allow panning
+                                        minScale: 0.5, // Minimum zoom scale
+                                        maxScale: 4.0, // Maximum zoom scale
+                                        child: CachedNetworkImage(
+                                          imageUrl:
+                                              'https://drive.google.com/uc?export=download&id=$fileId',
+                                          placeholder:
+                                              (context, url) => const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
                                               ),
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                            ),
-                                          ),
-                                          body: InteractiveViewer(
-                                            panEnabled: true,
-                                            minScale: 0.5,
-                                            maxScale: 4.0,
-                                            child: CachedNetworkImage(
-                                              imageUrl:
-                                                  'https://drive.google.com/uc?export=download&id=$fileId',
-                                              placeholder:
-                                                  (
-                                                    context,
-                                                    url,
-                                                  ) => const Center(
-                                                    child:
-                                                        CircularProgressIndicator(),
+                                          errorWidget:
+                                              (context, url, error) =>
+                                                  const Center(
+                                                    child: Icon(Icons.error),
                                                   ),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      const Center(
-                                                        child: Icon(
-                                                          Icons.error,
-                                                        ),
-                                                      ),
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
+                                          fit: BoxFit.contain,
                                         ),
-                                      );
-                                    },
+                                      ),
+                                    ),
                                   );
                                 },
-                                child: Stack(
-                                  children: [
-                                    CachedNetworkImage(
-                                      imageUrl:
-                                          'https://drive.google.com/uc?export=download&id=$fileId',
-                                      progressIndicatorBuilder: (
-                                        context,
-                                        url,
-                                        downloadProgress,
-                                      ) {
-                                        final progress =
-                                            (downloadProgress.progress ?? 0) *
-                                            100;
-                                        return Center(
-                                          child: Text(
-                                            '${progress.toStringAsFixed(0)}%',
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      errorWidget:
-                                          (context, url, error) =>
-                                              const Icon(Icons.error),
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                    ),
-                                    Positioned(
-                                      bottom: 10,
-                                      right: 10,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0,
-                                          vertical: 4.0,
-                                        ),
-                                        color: Colors.black.withOpacity(0.3),
-                                        child: Text(
-                                          '${index + 1} of ${validFileIds.length}',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               );
                             },
-                          ),
-                        ),
-                      if (user.properties!.name!.title.isEmpty)
-                        const SizedBox()
-                      else
-                        Text(
-                          truncateText(
-                            user.properties!.name!.title.first.text!.content +
-                                user
-                                    .properties!
-                                    .name!
-                                    .title
-                                    .first
-                                    .text!
-                                    .content
-                                    .length
-                                    .toString(),
-                            2,
-                          ),
-                          maxLines:
-                              user
-                                          .properties!
-                                          .name!
-                                          .title
-                                          .first
-                                          .text!
-                                          .content
-                                          .length >
-                                      40
-                                  ? 2
-                                  : 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                    ],
+                            child: Stack(
+                              children: [
+                                CachedNetworkImage(
+                                  imageUrl:
+                                      'https://drive.google.com/uc?export=download&id=$fileId',
+                                  progressIndicatorBuilder: (
+                                    context,
+                                    url,
+                                    downloadProgress,
+                                  ) {
+                                    final progress =
+                                        (downloadProgress.progress ?? 0) * 100;
+                                    return Center(
+                                      child: Text(
+                                        '${progress.toStringAsFixed(0)}%', // Show progress as a percentage
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  errorWidget:
+                                      (context, url, error) =>
+                                          const Icon(Icons.error),
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                ),
+                                Positioned(
+                                  bottom: 10,
+                                  right: 10,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0,
+                                      vertical: 4.0,
+                                    ),
+                                    color: Colors.black.withOpacity(0.3),
+                                    child: Text(
+                                      '${index + 1} of ${validFileIds.length}', // Display the index (1-based) and total count
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Text(
+                      textDirection: TextDirection.rtl,
+                      truncateText(
+                        user.properties!.name!.title.first.text!.content,
+                        2,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 14),
+                      //strutStyle: const StrutStyle(fontWeight: FontWeight.bold),
+
+                      // overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-              ],
-            ),
+                ],
+              );
+            },
           );
           /*   return GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
