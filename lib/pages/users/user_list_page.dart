@@ -56,38 +56,28 @@ class _UserListPageState extends ConsumerState<UserListPage> {
             }
           }
 
-          return ListView.separated(
+          return GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, // Number of columns
+              crossAxisSpacing: 8.0, // Spacing between columns
+              mainAxisSpacing: 8.0, // Spacing between rows
+              childAspectRatio: 0.8, // Adjust the aspect ratio as needed
+            ),
             itemCount: users.length,
-            separatorBuilder: (BuildContext context, int index) {
-              return const Divider();
-            },
             itemBuilder: (BuildContext context, int index) {
               final user = users[index];
 
               return Column(
                 children: [
-                  Text(user.properties!.name!.title.first.text!.content),
-                  //if (user.properties!.tags!.multiSelect.isNotEmpty)
-                  Row(
-                    children:
-                        user.properties!.tags!.multiSelect.map((tag) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 4.0,
-                            ),
-                            child: Chip(
-                              label: Text(tag.name),
-                              backgroundColor: Colors.blue.shade100,
-                            ),
-                          );
-                        }).toList(),
+                  Text(
+                    user.properties!.name!.title.first.text!.content,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-
                   if (user.properties!.image!.richText.isEmpty)
                     const SizedBox()
                   else
                     SizedBox(
-                      height: 400, // Adjust the height as needed
+                      height: 200, // Adjust the height as needed
                       child: PageView.builder(
                         itemCount:
                             user.properties!.image!.richText
