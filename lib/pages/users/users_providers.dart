@@ -33,19 +33,6 @@ FutureOr<List<NotionItem>> notionItem(Ref ref) async {
   return items;
 }
 
-final myHammadListProvider =
-    StateNotifierProvider<MyHammadListNotifier, List<Temu>>((ref) {
-      return MyHammadListNotifier();
-    });
-
-class MyHammadListNotifier extends StateNotifier<List<Temu>> {
-  MyHammadListNotifier() : super([]);
-
-  void addAll(List<Temu> items) {
-    state = [...state, ...items];
-  }
-}
-
 @riverpod
 FutureOr<List<Temu>> temuItem(Ref ref) async {
   ref.onDispose(() {});
@@ -54,7 +41,7 @@ FutureOr<List<Temu>> temuItem(Ref ref) async {
   final List itemList = response.data['results'];
   final items = [for (final user in itemList) Temu.fromJson(user)];
   // print(items.length);
-  ref.read(myHammadListProvider.notifier).addAll(items);
+  //ref.read(myHammadListProvider.notifier).addAll(items);
 
   return items;
 }

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class Temu extends Equatable {
-  Temu({
+  const Temu({
     required this.object,
     required this.id,
     required this.createdTime,

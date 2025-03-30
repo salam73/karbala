@@ -22,7 +22,7 @@ final notionItemProvider = AutoDisposeFutureProvider<List<NotionItem>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef NotionItemRef = AutoDisposeFutureProviderRef<List<NotionItem>>;
-String _$temuItemHash() => r'5f6969d0544cad50e6173342b6e0496ba6080d87';
+String _$temuItemHash() => r'fc414f7a612a9f754051f24dc84fc2f06cea91e4';
 
 /// See also [temuItem].
 @ProviderFor(temuItem)
