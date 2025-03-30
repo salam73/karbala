@@ -6,7 +6,7 @@ part of 'users_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$notionItemHash() => r'4748ca481278199a5597cafcc94a819b0d5152fb';
+String _$notionItemHash() => r'200f1ae534b8223b7ff1aced3bb4d83d5e9128c5';
 
 /// See also [notionItem].
 @ProviderFor(notionItem)
@@ -22,7 +22,7 @@ final notionItemProvider = AutoDisposeFutureProvider<List<NotionItem>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef NotionItemRef = AutoDisposeFutureProviderRef<List<NotionItem>>;
-String _$temuItemHash() => r'fc414f7a612a9f754051f24dc84fc2f06cea91e4';
+String _$temuItemHash() => r'19669d8b2ef8287fb3e80dfde89e443f36ab3167';
 
 /// See also [temuItem].
 @ProviderFor(temuItem)

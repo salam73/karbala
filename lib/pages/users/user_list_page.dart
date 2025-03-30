@@ -41,191 +41,355 @@ class _UserListPageState extends ConsumerState<UserListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final MyTemuListNotifier myTemuListNotifier = ref.watch(
+      myTemu.notifier,
+    ); // Access the notifier
     AsyncValue<List<tm.Temu>> temuItemList = ref.watch(temuItemProvider);
-
+    print(
+      'isLoading: ${temuItemList.isLoading}, isRefreshing: ${temuItemList.isRefreshing}, isReloading: ${temuItemList.isReloading}',
+    );
+    print(
+      'hasValue: ${temuItemList.hasValue}, hasError: ${temuItemList.hasError}',
+    );
     return Scaffold(
       appBar: AppBar(
         title: const Text('User List'),
         actions: const [RefreshButton()],
       ),
-      body: temuItemList.when(
-        data: (users) {
-          // Pre-cache all images in the ListView
-          for (final user in users) {
-            if (user.properties?.image?.richText != null) {
-              for (final image in user.properties!.image!.richText) {
-                final fileId = extractGoogleDriveFileId(image.plainText);
-                if (fileId.isNotEmpty) {
-                  precacheImage(
-                    CachedNetworkImageProvider(
-                      'https://drive.google.com/uc?export=download&id=$fileId',
-                    ),
-                    context,
-                  );
-                }
-              }
-            }
-          }
-
-          return MasonryGridView.count(
-            crossAxisCount: 2, // Number of columns
-            mainAxisSpacing: 8.0, // Spacing between rows
-            crossAxisSpacing: 8.0, // Spacing between columns
-            itemCount: users.length,
-            itemBuilder: (context, index) {
-              final user = users[index];
-              if (user.properties!.name!.title.isEmpty) {
-                return const SizedBox();
-              }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (user.properties!.image!.richText.isNotEmpty)
-                    SizedBox(
-                      height: 200, // Adjust the height as needed
-                      child: PageView.builder(
-                        itemCount:
-                            user.properties!.image!.richText
-                                .map(
-                                  (image) =>
-                                      extractGoogleDriveFileId(image.plainText),
-                                )
-                                .where((fileId) => fileId.isNotEmpty)
-                                .length,
-                        itemBuilder: (context, index) {
-                          // Filter valid file IDs
-                          final validFileIds =
-                              user.properties!.image!.richText
-                                  .map(
-                                    (image) => extractGoogleDriveFileId(
-                                      image.plainText,
+      body:
+          ref.watch(myTemu).isNotEmpty
+              ? MasonryGridView.count(
+                crossAxisCount: 2, // Number of columns
+                mainAxisSpacing: 8.0, // Spacing between rows
+                crossAxisSpacing: 8.0, // Spacing between columns
+                itemCount: myTemuListNotifier.state.length,
+                itemBuilder: (context, index) {
+                  final user = myTemuListNotifier.state[index];
+                  if (user.properties!.name!.title.isEmpty) {
+                    return const SizedBox();
+                  }
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (user.properties!.image!.richText.isNotEmpty)
+                        SizedBox(
+                          height: 200, // Adjust the height as needed
+                          child: PageView.builder(
+                            itemCount:
+                                user.properties!.image!.richText
+                                    .map(
+                                      (image) => extractGoogleDriveFileId(
+                                        image.plainText,
+                                      ),
+                                    )
+                                    .where((fileId) => fileId.isNotEmpty)
+                                    .length,
+                            itemBuilder: (context, index) {
+                              final validFileIds =
+                                  user.properties!.image!.richText
+                                      .map(
+                                        (image) => extractGoogleDriveFileId(
+                                          image.plainText,
+                                        ),
+                                      )
+                                      .where((fileId) => fileId.isNotEmpty)
+                                      .toList();
+                              final fileId = validFileIds[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return Dialog(
+                                        insetPadding: EdgeInsets.zero,
+                                        child: Scaffold(
+                                          appBar: AppBar(
+                                            title: const Text('Image Viewer'),
+                                            leading: IconButton(
+                                              icon: const Icon(
+                                                Icons.arrow_back,
+                                              ),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ),
+                                          body: ImagePageView(
+                                            user: user,
+                                            length: validFileIds.length,
+                                            index2: index,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                child: Stack(
+                                  children: [
+                                    CachedNetworkImage(
+                                      imageUrl:
+                                          'https://drive.google.com/uc?export=download&id=$fileId',
+                                      progressIndicatorBuilder: (
+                                        context,
+                                        url,
+                                        downloadProgress,
+                                      ) {
+                                        final progress =
+                                            (downloadProgress.progress ?? 0) *
+                                            100;
+                                        return Center(
+                                          child: Text(
+                                            '${progress.toStringAsFixed(0)}%',
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      errorWidget:
+                                          (context, url, error) =>
+                                              const Icon(Icons.error),
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
                                     ),
-                                  )
-                                  .where((fileId) => fileId.isNotEmpty)
-                                  .toList();
-
-                          // Get the file ID for the current index
-                          final fileId = validFileIds[index];
-
-                          // Display the image with the index as text
-                          return GestureDetector(
-                            onTap: () {
-                              // Show the popup with the current image
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return Dialog(
-                                    insetPadding:
-                                        EdgeInsets
-                                            .zero, // Remove default padding
-                                    child: Scaffold(
-                                      appBar: AppBar(
-                                        title: const Text('Image Viewer'),
-                                        leading: IconButton(
-                                          icon: const Icon(Icons.arrow_back),
-                                          onPressed: () {
-                                            Navigator.of(
-                                              context,
-                                            ).pop(); // Close the dialog
-                                          },
+                                    Positioned(
+                                      bottom: 10,
+                                      right: 10,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0,
+                                          vertical: 4.0,
+                                        ),
+                                        color: Colors.black.withOpacity(0.3),
+                                        child: Text(
+                                          '${index + 1} of ${validFileIds.length}',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
-                                      body: ImagePageView(
-                                        user: user,
-                                        length: validFileIds.length,
-                                        index2: index,
-                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      const SizedBox(height: 8),
+                      Center(
+                        child: Text(
+                          textDirection: TextDirection.rtl,
+                          truncateText(
+                            user.properties!.name!.title.first.text!.content,
+                            2,
+                          ),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              )
+              : temuItemList.when(
+                data: (users) {
+                  // Pre-cache all images in the ListView
+                  for (final user in users) {
+                    if (user.properties?.image?.richText != null) {
+                      for (final image in user.properties!.image!.richText) {
+                        final fileId = extractGoogleDriveFileId(
+                          image.plainText,
+                        );
+                        if (fileId.isNotEmpty) {
+                          precacheImage(
+                            CachedNetworkImageProvider(
+                              'https://drive.google.com/uc?export=download&id=$fileId',
+                            ),
+                            context,
+                          );
+                        }
+                      }
+                    }
+                  }
+
+                  return MasonryGridView.count(
+                    crossAxisCount: 2, // Number of columns
+                    mainAxisSpacing: 8.0, // Spacing between rows
+                    crossAxisSpacing: 8.0, // Spacing between columns
+                    itemCount: users.length,
+                    itemBuilder: (context, index) {
+                      final user = users[index];
+                      if (user.properties!.name!.title.isEmpty) {
+                        return const SizedBox();
+                      }
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (user.properties!.image!.richText.isNotEmpty)
+                            SizedBox(
+                              height: 200, // Adjust the height as needed
+                              child: PageView.builder(
+                                itemCount:
+                                    user.properties!.image!.richText
+                                        .map(
+                                          (image) => extractGoogleDriveFileId(
+                                            image.plainText,
+                                          ),
+                                        )
+                                        .where((fileId) => fileId.isNotEmpty)
+                                        .length,
+                                itemBuilder: (context, index) {
+                                  final validFileIds =
+                                      user.properties!.image!.richText
+                                          .map(
+                                            (image) => extractGoogleDriveFileId(
+                                              image.plainText,
+                                            ),
+                                          )
+                                          .where((fileId) => fileId.isNotEmpty)
+                                          .toList();
+                                  final fileId = validFileIds[index];
+                                  return GestureDetector(
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return Dialog(
+                                            insetPadding: EdgeInsets.zero,
+                                            child: Scaffold(
+                                              appBar: AppBar(
+                                                title: const Text(
+                                                  'Image Viewer',
+                                                ),
+                                                leading: IconButton(
+                                                  icon: const Icon(
+                                                    Icons.arrow_back,
+                                                  ),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ),
+                                              body: ImagePageView(
+                                                user: user,
+                                                length: validFileIds.length,
+                                                index2: index,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: Stack(
+                                      children: [
+                                        CachedNetworkImage(
+                                          imageUrl:
+                                              'https://drive.google.com/uc?export=download&id=$fileId',
+                                          progressIndicatorBuilder: (
+                                            context,
+                                            url,
+                                            downloadProgress,
+                                          ) {
+                                            final progress =
+                                                (downloadProgress.progress ??
+                                                    0) *
+                                                100;
+                                            return Center(
+                                              child: Text(
+                                                '${progress.toStringAsFixed(0)}%',
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          errorWidget:
+                                              (context, url, error) =>
+                                                  const Icon(Icons.error),
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                        ),
+                                        Positioned(
+                                          bottom: 10,
+                                          right: 10,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0,
+                                              vertical: 4.0,
+                                            ),
+                                            color: Colors.black.withOpacity(
+                                              0.3,
+                                            ),
+                                            child: Text(
+                                              '${index + 1} of ${validFileIds.length}',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   );
                                 },
-                              );
-                            },
-                            child: Stack(
-                              children: [
-                                CachedNetworkImage(
-                                  imageUrl:
-                                      'https://drive.google.com/uc?export=download&id=$fileId',
-                                  progressIndicatorBuilder: (
-                                    context,
-                                    url,
-                                    downloadProgress,
-                                  ) {
-                                    final progress =
-                                        (downloadProgress.progress ?? 0) * 100;
-                                    return Center(
-                                      child: Text(
-                                        '${progress.toStringAsFixed(0)}%', // Show progress as a percentage
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  errorWidget:
-                                      (context, url, error) =>
-                                          const Icon(Icons.error),
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                ),
-                                Positioned(
-                                  bottom: 10,
-                                  right: 10,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0,
-                                      vertical: 4.0,
-                                    ),
-                                    color: Colors.black.withOpacity(0.3),
-                                    child: Text(
-                                      '${index + 1} of ${validFileIds.length}', // Display the index (1-based) and total count
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          );
-                        },
-                      ),
+                          const SizedBox(height: 8),
+                          Center(
+                            child: Text(
+                              textDirection: TextDirection.rtl,
+                              truncateText(
+                                user
+                                    .properties!
+                                    .name!
+                                    .title
+                                    .first
+                                    .text!
+                                    .content,
+                                2,
+                              ),
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                loading: () {
+                  return const Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 16),
+                        Text('Loading data...'),
+                      ],
                     ),
-
-                  const SizedBox(height: 8),
-                  Center(
+                  );
+                },
+                error: (error, stack) {
+                  return Center(
                     child: Text(
-                      textDirection: TextDirection.rtl,
-                      truncateText(
-                        user.properties!.name!.title.first.text!.content,
-                        2,
-                      ),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 14),
-                      //strutStyle: const StrutStyle(fontWeight: FontWeight.bold),
-
-                      // overflow: TextOverflow.ellipsis,
+                      'Error: $error',
+                      style: const TextStyle(color: Colors.red, fontSize: 18),
                     ),
-                  ),
-                ],
-              );
-            },
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error:
-            (error, stack) => Center(
-              child: Text(
-                'Error: $error',
-                style: const TextStyle(color: Colors.red, fontSize: 18),
+                  );
+                },
               ),
-            ),
-      ),
     );
   }
 }

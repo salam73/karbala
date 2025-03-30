@@ -1,8 +1,9 @@
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:karbala/models/temu.dart';
+import 'package:karbala/models/mohammad.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../models/temu.dart';
 import '../../models/user.dart';
 import '../../models/item.dart';
 import '../../providers/dio_provider.dart';
@@ -29,8 +30,20 @@ FutureOr<List<NotionItem>> notionItem(Ref ref) async {
   // throw 'Fail to fetch user list';
   final List itemList = response.data['results'];
   final items = [for (final user in itemList) NotionItem.fromJson(user)];
-  print(items.length);
+  // print(items.length);
   return items;
+}
+
+final myTemu = StateNotifierProvider<MyTemuListNotifier, List<Temu>>((ref) {
+  return MyTemuListNotifier();
+});
+
+class MyTemuListNotifier extends StateNotifier<List<Temu>> {
+  MyTemuListNotifier() : super([]);
+
+  void addAll(List<Temu> items) {
+    state = [...state, ...items];
+  }
 }
 
 @riverpod
@@ -41,7 +54,7 @@ FutureOr<List<Temu>> temuItem(Ref ref) async {
   final List itemList = response.data['results'];
   final items = [for (final user in itemList) Temu.fromJson(user)];
   // print(items.length);
-  //ref.read(myHammadListProvider.notifier).addAll(items);
+  ref.read(myTemu.notifier).addAll(items);
 
   return items;
 }
