@@ -62,11 +62,28 @@ class _UserListPageState extends ConsumerState<UserListPage> {
                 crossAxisCount: 2, // Number of columns
                 mainAxisSpacing: 8.0, // Spacing between rows
                 crossAxisSpacing: 8.0, // Spacing between columns
-                itemCount: myTemuListNotifier.state.length,
+                itemCount: ref.watch(myTemu).length,
                 itemBuilder: (context, index) {
-                  final user = myTemuListNotifier.state[index];
+                  final user = ref.watch(myTemu)[index];
                   if (user.properties!.name!.title.isEmpty) {
                     return const SizedBox();
+                  }
+                  for (final user in ref.watch(myTemu)) {
+                    if (user.properties?.image?.richText != null) {
+                      for (final image in user.properties!.image!.richText) {
+                        final fileId = extractGoogleDriveFileId(
+                          image.plainText,
+                        );
+                        if (fileId.isNotEmpty) {
+                          precacheImage(
+                            CachedNetworkImageProvider(
+                              'https://drive.google.com/uc?export=download&id=$fileId',
+                            ),
+                            context,
+                          );
+                        }
+                      }
+                    }
                   }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
